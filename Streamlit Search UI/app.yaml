@@ -1,0 +1,26 @@
+name: Streamlit Search UI
+language: python
+variables:
+  - name: weaviate_apikey
+    inputType: Secret
+    description: ''
+    defaultValue: weaviate_apikey
+    required: false
+  - name: collectionname
+    inputType: FreeText
+    description: ''
+    defaultValue: Products
+    required: false
+  - name: weaviate_rest_endpoint
+    inputType: FreeText
+    description: ''
+    defaultValue: https://quix-redpanda-demo-7tzft9dj.weaviate.network
+    required: false
+  - name: OPENAI_API_KEY
+    inputType: Secret
+    description: ''
+    defaultValue: openai_apikey
+    required: false
+dockerfile: dockerfile
+runEntryPoint: main.py
+defaultFile: streamlit_file.py

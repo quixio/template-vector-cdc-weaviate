@@ -1,0 +1,156 @@
+# Quix Project Descriptor
+# This file describes the data pipeline and configuration of resources of a Quix Project.
+
+metadata:
+  version: 1.0
+
+# This section describes the Deployments of the data pipeline
+deployments:
+  - name: PostgreSQL CDC
+    application: Postgres CDC
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 500
+      replicas: 1
+    desiredStatus: Running
+    variables:
+      - name: output
+        inputType: OutputTopic
+        description: This is the output topic
+        required: true
+        value: postgres-cdc-source
+      - name: PG_HOST
+        inputType: FreeText
+        description: Host name of Postgres
+        required: true
+        value: postgresdb
+      - name: PG_PORT
+        inputType: FreeText
+        description: Port of Postgres
+        required: true
+        value: 80
+      - name: PG_USER
+        inputType: FreeText
+        description: Username of Postgres
+        required: true
+        value: root
+      - name: PG_DATABASE
+        inputType: FreeText
+        description: Database name of Postgres
+        required: true
+        value: test_db
+      - name: PG_SCHEMA
+        inputType: FreeText
+        description: Name of schema for CDC
+        required: true
+        value: public
+      - name: PG_TABLE
+        inputType: FreeText
+        description: Name of table for CDC
+        required: true
+        value: Products
+      - name: PG_PASSWORD
+        inputType: FreeText
+        description: ''
+        required: false
+        value: root
+  - name: Create Embeddings
+    application: Create Embeddings
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 500
+      memory: 1000
+      replicas: 1
+    desiredStatus: Stopped
+    variables:
+      - name: input
+        inputType: InputTopic
+        description: Name of the input topic to listen to.
+        required: false
+        value: postgres-cdc-source
+      - name: output
+        inputType: OutputTopic
+        description: Name of the output topic to write to.
+        required: false
+        value: embeddings-sbert-v1
+  - name: pgAdmin Database Admin UI
+    application: pgAdmin Database Admin UI
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 500
+      replicas: 1
+    publicAccess:
+      enabled: true
+      urlPrefix: pgadminui-7931e12
+    desiredStatus: Running
+    variables: []
+  - name: Demo PostgreSQL Database
+    application: Test PostgreSQL Database
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 500
+      replicas: 1
+    desiredStatus: Running
+    network:
+      serviceName: postgresdb
+      ports:
+        - port: 80
+          targetPort: 5432
+    variables: []
+  - name: Ingest to Weaviate Cloud VectorDB
+    application: Ingest to Weaviate Cloud VectorDB
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 500
+      replicas: 1
+    variables:
+      - name: input
+        inputType: InputTopic
+        description: This is the input topic for demo data
+        required: true
+        value: postgres-cdc-source
+      - name: collectionname
+        inputType: FreeText
+        description: ''
+        required: false
+        value: Products
+      - name: weaviate_apikey
+        inputType: Secret
+        description: ''
+        required: true
+        secretKey: weaviate_apikey
+      - name: weaviate_rest_endpoint
+        inputType: FreeText
+        description: ''
+        required: true
+        value: https://quix-demo-adk86m6q.weaviate.network
+      - name: OPENAI_APIKEY
+        inputType: Secret
+        description: ''
+        required: false
+        secretKey: openai_apikey
+      - name: groupname
+        inputType: FreeText
+        description: ''
+        required: false
+        value: ingester-v3
+      - name: PG_TABLE
+        inputType: FreeText
+        description: ''
+        required: false
+        value: products
+
+# This section describes the Topics of the data pipeline
+topics:
+  - name: embeddings-sbert-v1
+  - name: postgres-cdc-source
+  - name: embeddings-sbert-minilm-l6-v2

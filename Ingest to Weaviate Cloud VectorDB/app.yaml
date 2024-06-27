@@ -1,0 +1,41 @@
+name: Ingest to Weaviate Cloud VectorDB
+language: python
+variables:
+  - name: input
+    inputType: InputTopic
+    description: This is the input topic for demo data
+    defaultValue: postgres-cdc-source
+    required: true
+  - name: collectionname
+    inputType: FreeText
+    description: ''
+    defaultValue: Products
+    required: false
+  - name: weaviate_apikey
+    inputType: Secret
+    description: ''
+    defaultValue: weaviate_apikey
+    required: true
+  - name: weaviate_rest_endpoint
+    inputType: FreeText
+    description: ''
+    defaultValue: https://quix-demo-adk86m6q.weaviate.network
+    required: true
+  - name: OPENAI_APIKEY
+    inputType: Secret
+    description: ''
+    defaultValue: openai_apikey
+    required: false
+  - name: groupname
+    inputType: FreeText
+    description: ''
+    defaultValue: ingester-v1
+    required: false
+  - name: PG_TABLE
+    inputType: FreeText
+    description: ''
+    defaultValue: products
+    required: false
+dockerfile: dockerfile
+runEntryPoint: main.py
+defaultFile: main.py
